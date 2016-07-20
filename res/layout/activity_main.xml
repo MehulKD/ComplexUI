@@ -22,7 +22,7 @@
         </RelativeLayout>
         
             
-        <com.example.newgoldinglauncher.LedView
+        <com.example.widget.LedView
             android:id="@+id/led_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
@@ -54,13 +54,32 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
-                    android:text="惠州"/>
-                
+                    android:text="惠州"/> 
             </LinearLayout>
-            
-            
-            
+           
         </RelativeLayout>
+        
+        <LinearLayout
+                   android:layout_width="500dp"
+                   android:layout_height="100dp"
+                   android:orientation="horizontal"
+                   android:background="@drawable/background">
+                   <ImageView
+                       android:id="@+id/previous"
+                       android:layout_width="18dp"
+                       android:layout_height="30dp"
+                       android:src="@drawable/previous"/>
+                <com.example.widget.HorizontalListView
+                    android:id="@+id/fountion_list"
+                    android:layout_width="400dp"
+                    android:layout_height="100dp"/>
+                
+                <ImageView
+                    android:id="@+id/next"
+                    android:layout_width="18dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/next"/>
+                </LinearLayout> 
   
     </LinearLayout>
 

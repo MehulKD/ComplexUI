@@ -22,24 +22,42 @@ public final class R {
     }
     public static final class drawable {
         public static final int background=0x7f020000;
-        public static final int ic_launcher=0x7f020001;
-        public static final int initweather=0x7f020002;
-        public static final int setting=0x7f020003;
+        public static final int fountion1=0x7f020001;
+        public static final int fountion10=0x7f020002;
+        public static final int fountion11=0x7f020003;
+        public static final int fountion2=0x7f020004;
+        public static final int fountion3=0x7f020005;
+        public static final int fountion4=0x7f020006;
+        public static final int fountion5=0x7f020007;
+        public static final int fountion6=0x7f020008;
+        public static final int fountion7=0x7f020009;
+        public static final int fountion8=0x7f02000a;
+        public static final int fountion9=0x7f02000b;
+        public static final int ic_launcher=0x7f02000c;
+        public static final int initweather=0x7f02000d;
+        public static final int next=0x7f02000e;
+        public static final int previous=0x7f02000f;
+        public static final int setting=0x7f020010;
     }
     public static final class id {
-        public static final int action_settings=0x7f080008;
+        public static final int action_settings=0x7f08000c;
         public static final int bottom_list=0x7f080000;
         public static final int cityname=0x7f080005;
-        public static final int led_day=0x7f080007;
-        public static final int led_time=0x7f080006;
+        public static final int fountion_list=0x7f080007;
+        public static final int image=0x7f080009;
+        public static final int led_day=0x7f08000b;
+        public static final int led_time=0x7f08000a;
         public static final int led_view=0x7f080002;
+        public static final int next=0x7f080008;
+        public static final int previous=0x7f080006;
         public static final int setting=0x7f080001;
         public static final int temp=0x7f080004;
         public static final int weather=0x7f080003;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
-        public static final int ledview=0x7f030001;
+        public static final int imageview=0x7f030001;
+        public static final int ledview=0x7f030002;
     }
     public static final class menu {
         public static final int main=0x7f070000;

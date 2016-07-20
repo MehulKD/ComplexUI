@@ -1,8 +1,12 @@
-package com.example.newgoldinglauncher;
+package com.example.widget;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+
+import com.example.newgoldinglauncher.R;
+import com.example.newgoldinglauncher.R.id;
+import com.example.newgoldinglauncher.R.layout;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -35,9 +39,9 @@ public class LedView extends LinearLayout{
 			String week = String.valueOf(calendar.get(Calendar.WEDNESDAY));
 			String month = String.valueOf(calendar.get(Calendar.MONTH));
 			String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-			Log.e("week", week);
-			Log.e("month", month);
-			Log.e("day",day);
+//			Log.e("week", week);
+//			Log.e("month", month);
+//			Log.e("day",day);
 			daytext.setText(String.format(DAY_FORMAT, week,month,day));
 			handler.postDelayed(this, REFRESH_DELAY);
 			
