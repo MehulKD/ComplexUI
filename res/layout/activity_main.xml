@@ -64,21 +64,29 @@
                    android:layout_height="100dp"
                    android:orientation="horizontal"
                    android:background="@drawable/background">
-                   <ImageView
+            
+                   <com.example.widget.MyImageView
                        android:id="@+id/previous"
-                       android:layout_width="18dp"
+                       android:layout_width="50dp"
                        android:layout_height="30dp"
                        android:src="@drawable/previous"/>
-                <com.example.widget.HorizontalListView
+                   
+                <com.example.widget.MyHorizontalScroller
                     android:id="@+id/fountion_list"
                     android:layout_width="400dp"
-                    android:layout_height="100dp"/>
+                    android:layout_height="100dp">
+                <LinearLayout
+                    android:layout_width="400dp"
+                    android:layout_height="200dp"
+                    android:orientation="horizontal"/>
+                </com.example.widget.MyHorizontalScroller>
                 
-                <ImageView
+                <com.example.widget.MyImageView
                     android:id="@+id/next"
-                    android:layout_width="18dp"
+                    android:layout_width="50dp"
                     android:layout_height="30dp"
                     android:src="@drawable/next"/>
+                
                 </LinearLayout> 
   
     </LinearLayout>

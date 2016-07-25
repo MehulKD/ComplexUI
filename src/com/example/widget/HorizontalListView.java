@@ -42,6 +42,7 @@ public class HorizontalListView extends ViewGroup{
 			scroller = new Scroller(getContext());
 			vTracker = VelocityTracker.obtain();
 		}
+		
 	}
 	
 	@Override
@@ -97,7 +98,7 @@ public class HorizontalListView extends ViewGroup{
 		case MotionEvent.ACTION_MOVE:
 			int deltaX = x - LastX;
             int deltaY = y - LastY;
-            scrollBy(-deltaX, 0);
+            smoothScrollBy(-deltaX, 0);
             break;
 			
 		case MotionEvent.ACTION_UP:
@@ -122,6 +123,8 @@ public class HorizontalListView extends ViewGroup{
 		LastY = y;
 		return true;
 	}
+	
+
 	
 	@Override
 	protected void onMeasure(int widthMeasureSpec,int heightMeasureSpec){
