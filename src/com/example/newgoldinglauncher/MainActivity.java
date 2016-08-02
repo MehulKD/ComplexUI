@@ -22,8 +22,10 @@ import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,12 +39,12 @@ public class MainActivity extends Activity {
 	private HorizontalListView fountionList;
 	private MyHorizontalScroller horizontalScroller;
 	private HorizontalAdapter adapter;
-	private int[] imgId = new int[]{R.drawable.fountion1,R.drawable.fountion2,R.drawable.fountion3,R.drawable.fountion4,
-			R.drawable.fountion5,R.drawable.fountion6,R.drawable.fountion7,R.drawable.fountion8,R.drawable.fountion9,
-			R.drawable.fountion10,R.drawable.fountion11};
+	private int[] imgId = new int[]{R.drawable.a,R.drawable.b,R.drawable.c,R.drawable.d,R.drawable.e,R.drawable.f,R.drawable.g,
+			R.drawable.h,R.drawable.i,R.drawable.j,R.drawable.k};
 	private HashMap<Integer, View>selector = new HashMap<Integer, View>();
-	private int positiion = 0;
+	private static int position;
 	private ArrayList<Integer> imgList = new ArrayList<Integer>();
+	private View selectView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,50 +60,67 @@ public class MainActivity extends Activity {
         
     }
     
-    private void init(Context context){
+    private void init(Context context){//初始化界面
     	LayoutInflater inflater = getLayoutInflater();
     	for(int i = 0;i < imgId.length;i++){
     		imgList.add(imgId[i]);
     		Log.e("imgId",String.valueOf(imgId[i]));
     	}
     	adapter = new HorizontalAdapter(context, imgList);
-    	horizontalScroller.setOnClickItemListener(new OnItemCilckListener() {
+    	horizontalScroller.setOnClickItemListener(new OnItemCilckListener() {//自己编写的接口，为了将选中的view的背景变蓝
 			@Override
 			public void onClick(View v, int pos) {
 				// TODO Auto-generated method stub
-				Log.e("item", "here");
+				Log.e("item", "pos"+pos);
 				v.setBackgroundColor(Color.parseColor("#AA024DA4"));
-				positiion = pos;
-				Log.e("vpos", ""+pos);
+				horizontalScroller.setfirstposition(v);
+				selectView = v;
+				position = pos;
+				Log.e("position", ""+position);
 			}
 		});
     	horizontalScroller.initData(adapter);
-    	horizontalScroller.setOnCurrentImageChangeListener(new CurrentImageChangeListener() {
-			
+//    	horizontalScroller.setOnCurrentImageChangeListener(new CurrentImageChangeListener() {
+//			
+//			@Override
+//			public void OnCurrentChange(int position, View v) {
+//				// TODO Auto-generated method stub
+//				v.setBackgroundColor(Color.parseColor("#AA024DA4"));
+//			}
+//		});
+    	
+    	previous.setOnImageClickListener(new OnImageClickListener() {//向前滑动控件的接口
+
 			@Override
-			public void OnCurrentChange(int position, View v) {
+			public void click(View v) {
 				// TODO Auto-generated method stub
-				v.setBackgroundColor(Color.parseColor("#AA024DA4"));
+				Log.e("previous", "here");
+				if(selectView == null){
+					selectView = horizontalScroller.getInitView();
+				}else {
+					previous.getImgId(selectView);
+				}
+				
 			}
 		});
     	
-    	previous.setOnImageClickListener(new OnImageClickListener() {
+    	next.setOnImageClickListener(new OnImageClickListener() {//向后滑动控件
 			
 			@Override
-			public void onClick(View v) {
+			public void click(View v) {
 				// TODO Auto-generated method stub
-				previous.getImgId(positiion);
+				Log.e("next", "here");
+				if(selectView == null){
+					selectView = horizontalScroller.getInitView();
+				}else {
+					next.getImgId(selectView);
+				}
+				
 			}
 		});
+    
     	
-    	next.setOnImageClickListener(new OnImageClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				previous.getImgId(positiion);
-			}
-		});
+    	
     	
     }
     

@@ -1,5 +1,8 @@
 package com.example.widget;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.IllegalFormatCodePointException;
 import java.util.LinkedHashMap;
@@ -22,40 +25,31 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
-public class MyHorizontalScroller extends HorizontalScrollView implements OnClickListener{
+public class MyHorizontalScroller extends HorizontalScrollView implements OnTouchListener,setChildViewListener{
 	private static LinearLayout container;
-	private Map<View, Integer> map = new HashMap<View, Integer>();
-	private Map<Integer, View> changemap = new HashMap<Integer, View>();
+	private static Map<View, Integer> map = new HashMap<View, Integer>();//每个view的编号
+	private static Map<View, Integer> containermap = new HashMap<View, Integer>();//每个view在父容器的编号
 	private int ScreenWidth;
 	private int currentIndex;
 	private int FirstIndex = 0;
 	private static HorizontalAdapter adapter;
 	private OnItemCilckListener mListener;
 	private CurrentImageChangeListener cListener;
-	private static LinkedList<Integer> showList = new LinkedList<Integer>();
-	private static LinkedList<Integer> waitlist = new LinkedList<Integer>();
-	private int LastX;
-	private int LastY;
+	private static LinkedList<Integer> showList = new LinkedList<Integer>();//子view显示列表
+	private static LinkedList<Integer> waitlist = new LinkedList<Integer>();//子view待显示列表
+	private int LastInterceptX;
+	private int LastInterceptY;
 	private int ChildWidth;
 	private int ChildHeight;
-	private static int childCountonScreen;
+	private static int childCountonScreen;//当前屏幕子view个数
 	private LinearLayout parentLayout;
 	private VelocityTracker vTracker;
-	
-	@Override
-	public void onClick(View v){
-		Log.e("hclick","here");
-		if(mListener != null){
-			for(int i = 0;i < container.getChildCount();i++){
-				container.getChildAt(i).setBackgroundColor(Color.WHITE);
-			}
-			mListener.onClick(v,map.get(v));
-		}
-	}
+	private static int firstposition;
 	
 	public interface OnItemCilckListener{
 		public void onClick(View v,int pos);
@@ -95,35 +89,45 @@ public class MyHorizontalScroller extends HorizontalScrollView implements OnClic
 		container = (LinearLayout)getChildAt(0);
 	}
 	
-	protected void loadNextImg(){
+	protected void loadNextImg(){//手动滑动，向后滑动
+		//Log.e("movenext", "here");
 		if(adapter.getCount() == 0){
 			return;
 		}
-		int waittoadd = waitlist.remove();
-		int deleteshow = showList.remove();
+		int waittoadd = waitlist.removeFirst();
+		int deleteshow = showList.removeFirst();
 		showList.addLast(waittoadd);
 		waitlist.addLast(deleteshow);
 		int index = showList.get(childCountonScreen - 1);
 		map.remove(container.getChildAt(0));
-		changemap.remove(0);
+		containermap.remove(container.getChildAt(0));
 		container.removeViewAt(0);
 		View view = adapter.getView(index, null, container);
 		container.addView(view);
 		map.put(view, index);
-		changemap.put(index, view);
-		view.setOnClickListener(this);
+		Log.e("index", ""+index);
+//		for(Integer value : map.values()){
+//			Log.e("mapvalue", ""+value);
+//		}
+		for(int k = 0;k < childCountonScreen;k++){
+			containermap.put(container.getChildAt(k), k);
+		}
+		String clazz = this.getClass().getName();
+		//Log.e("nextthis", ""+clazz);
+		view.setOnTouchListener(this);
+		//setchildviewListener();
 		if(cListener != null){
 			notifyCurrentImgChange();
 		}
 	}
 	
-	protected void loadPreImg(){
+	protected void loadPreImg(){//手动滑动，向前滑动
 		if(adapter.getCount() == 0){
 			return;
 		}
 		int last = container.getChildCount() - 1;
 		map.remove(container.getChildAt(last));
-		changemap.remove(last);
+		containermap.remove(container.getChildAt(last));
 		container.removeViewAt(last);
 		int waittoadd = waitlist.removeLast();
 		int deleteshow = showList.removeLast();
@@ -133,8 +137,16 @@ public class MyHorizontalScroller extends HorizontalScrollView implements OnClic
 		View view = adapter.getView(index, null, container);
 		container.addView(view,0);
 		map.put(view, index);
-		changemap.put(index, view);
-		view.setOnClickListener(this);
+		for(int k = 0;k < childCountonScreen;k++){
+			containermap.put(container.getChildAt(k), k);
+		}
+		String clazz = this.getClass().getName();
+		Log.e("prethis", ""+clazz+last);
+		view.setOnTouchListener(this);
+		for(Integer value : map.values()){
+			Log.e("mapvalue",""+value);
+		}
+		//setchildviewListener();
 		if(cListener != null){
 			notifyCurrentImgChange();
 		}
@@ -152,9 +164,11 @@ public class MyHorizontalScroller extends HorizontalScrollView implements OnClic
 //			break;
 //			
 //		case MotionEvent.ACTION_MOVE:
-//			int deltaX = x - LastInterceptX;
-//			int deltaY = y - LastInterceptY;
-//			if(Math.abs(deltaX) > Math.abs(deltaY)){
+//			int x1 = (int)event.getX();
+//			int y1 = (int)event.getY();
+//			int deltaX = x - x1;
+//			int deltaY = y - y1;
+//			if(Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10){
 //				Intercept = false;
 //			}else {
 //				Intercept = true;
@@ -165,35 +179,52 @@ public class MyHorizontalScroller extends HorizontalScrollView implements OnClic
 //		default:
 //			break;
 //		}
-//		
 //		return Intercept;
 //	}
 	
+	
+	
 	@Override
-	public boolean onTouchEvent(MotionEvent event){
-		int x = (int)event.getX();
-		int y = (int)event.getY();
-
+	public boolean onTouch(View v, MotionEvent ev) {
+		// TODO Auto-generated method stub
 		int scrollX = getScrollX();
-		
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_MOVE:
-			if(scrollX >= ChildWidth){
-				loadNextImg();
+		vTracker.computeCurrentVelocity(1000);
+		float xVelocity =  vTracker.getXVelocity();
+		//Log.e("xv", ""+xVelocity);
+		switch (ev.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+			Log.e("down", "here");
+			int id = 0;
+			if(mListener != null){
+				Log.e("mListener", "notnull"+container.getChildCount());
+				for(int i = 0;i < container.getChildCount();i++){
+					container.getChildAt(i).setBackgroundColor(Color.WHITE);//将所有子view背景涂白
+				}
+				
+				mListener.onClick(v,containermap.get(v));
+				Log.e("hclick",""+id);
 			}
-			if(scrollX == 0){
+			Log.e("mListener", "null");
+			break;
+			
+		case MotionEvent.ACTION_MOVE:
+			Log.e("scrollx", ""+scrollX);
+			if(scrollX >= ChildWidth){
+				Log.e("go", "h");
+				loadNextImg();
+			}else if(scrollX == 0){
+				Log.e("back", "h");
 				loadPreImg();
 			}
 			break;
+			
 		case MotionEvent.ACTION_UP:
 			vTracker.clear();
 			break;
-			
+		default:
+			break;
 		}
-		LastX = x;
-		LastY = y;
-		return super.onTouchEvent(event);
-		
+		return true;
 	}
 	
 	
@@ -223,10 +254,10 @@ public class MyHorizontalScroller extends HorizontalScrollView implements OnClic
 		Log.e("countonScreen","" + childCountonScreen);
 		for(int i = 0;i < childCountonScreen;i++){
 			View view = adapter.getView(i, null, container);
-			view.setOnClickListener(this);
+			view.setOnTouchListener(this);
 			container.addView(view);
 			map.put(view, i);
-			changemap.put(i, view);
+			containermap.put(view, i);
 			currentIndex = i;
 			showList.add(i);
 		}
@@ -254,6 +285,10 @@ public class MyHorizontalScroller extends HorizontalScrollView implements OnClic
 		this.cListener = cListener;
 	}
 	
+	public void PressToScroll(){
+		scrollBy(ChildWidth, 0);
+	}
+	
 	
 	@Override
 	protected void onDetachedFromWindow(){
@@ -270,12 +305,7 @@ public class MyHorizontalScroller extends HorizontalScrollView implements OnClic
 	}
 	
 	public View getChildView(int i){
-		Log.e("id", "i");
-		if(container instanceof LinearLayout){
-			Log.e("container", "true");
-		}else {
-			Log.e("container", "false");
-		}
+		
 		return container.getChildAt(i);
 	}
 	
@@ -286,4 +316,33 @@ public class MyHorizontalScroller extends HorizontalScrollView implements OnClic
 	public int getCount(){
 		return container.getChildCount();
 	}
+	
+	public int getNextNumber(View v){
+		Log.e("containermap",""+containermap.get(v));
+		return containermap.get(v);
+	}
+	
+	public View getInitView(){
+		return container.getChildAt(0);
+	}
+	
+	public void setfirstposition(View v){
+		int position = containermap.get(v);
+		
+		this.firstposition = position;
+	}
+	
+	public int getfirstposition(){
+		Log.e("fposition", ""+firstposition);
+		return firstposition;
+	}
+
+	@Override
+	public void setchildviewListener() {
+		// TODO Auto-generated method stub
+		for(int i = 0;i < childCountonScreen;i++){
+			container.getChildAt(i).setOnTouchListener(this);
+		}
+	}
+	
 }
