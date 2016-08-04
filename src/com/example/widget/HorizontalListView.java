@@ -143,7 +143,7 @@ public class HorizontalListView extends ViewGroup{
 			Log.e("count = 0","here");
 		}else if(widthSpaceMode == MeasureSpec.AT_MOST && heightSpaceMode == MeasureSpec.AT_MOST){
 			final View childView = getChildAt(0);
-			measureWidth = childView.getMeasuredWidth() * ChildCount;
+			measureWidth = childView.getMeasuredWidth() ;
 			measureHeight = childView.getMeasuredHeight();
 			setMeasuredDimension(measureWidth, measureHeight);
 			Log.e("All Most", "here");

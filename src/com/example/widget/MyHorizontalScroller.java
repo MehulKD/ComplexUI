@@ -247,6 +247,8 @@ public class MyHorizontalScroller extends HorizontalScrollView implements OnTouc
 		initScreen(childCountonScreen);
 	}
 	
+
+	
 	public void initScreen(int childCountonScreen){
 		container = (LinearLayout) getChildAt(0);
 		container.removeAllViews();
